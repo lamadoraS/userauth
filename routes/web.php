@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,3 +21,10 @@ Route::get('/', function () {
 Route::get('/login', function () {
     return view('auth.login'); 
 });
+Route::get('/register', function () {
+    return view('auth.register'); 
+});
+
+
+
+Route::get('/dashboard', [DashboardController::class, 'dashboard']);
