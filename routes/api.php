@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\ForgetPassword;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Http\Request;
@@ -22,6 +23,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/auth/login', [LoginController::class, 'loginUser']);
 Route::post('verifyOTP',[LoginController::class,'verifyOTP']);
 Route::post('/auth/register', [RegisterController::class, 'createUser']);
+Route::post('verifyOtp',[RegisterController::class,'verifyOtp']);
 Route::post('resendOtp', [LoginController::class, 'resendOtp']);
 
 

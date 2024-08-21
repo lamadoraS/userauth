@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 
 class LoginController extends Controller
@@ -16,7 +17,7 @@ class LoginController extends Controller
         try {
             $credentials = $request->validate([
                 'email' => 'required|email',
-                'password' => 'required'
+                 'password' => 'required' 
             ]);
 
             $user = User::where('email', $request->email)->first();
@@ -31,10 +32,12 @@ class LoginController extends Controller
                 'otp_code' => $code,
             ]);
 
+            // $userPhoneNumber = $user->phone_number; // Assuming you have the user's phone number stored in $user->phone_number
+
             // Http::asForm()->post('https://api.semaphore.co/api/v4/messages', [
-            //    'apikey' => env('SEMAPHORE_API_KEY'),
-            //    'number' => '09631157992', 
-            //    'message' => 'This is your OTP Code: ' . $code,
+            // 'apikey' => env('SEMAPHORE_API_KEY'),
+            // 'number' => $userPhoneNumber, 
+            //  'message' => 'This is your OTP Code: ' . $code,
             // ]);
 
 
@@ -97,36 +100,6 @@ class LoginController extends Controller
             ], 500);
         }
     }   
-    public function resendOtp(Request $request)
-    {
-        try {
-            $user = Auth::user();
-
-            if (!$user) {
-                return response()->json(['status' => false, 'message' => 'User not authenticated.'], 401);
-            }
-
-            // Generate a new OTP
-            $otpCode = rand(100000, 999999);
-
-            // Update the OTP in the database
-            $user->update([
-                'otp_code' => $otpCode,
-            ]);
-
-            // Http::asForm()->post('https://api.semaphore.co/api/v4/messages', [
-            //    'apikey' => env('SEMAPHORE_API_KEY'),
-            //    'number' => '09631157992', 
-            //    'message' => 'This is your OTP Code: ' . $otpCode,
-            // ]);
-
-            return response()->json(['status' => true, 'message' => 'New OTP sent.', 'otp_code' => $otpCode], 200);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => false,
-                'message' => $th->getMessage()
-            ], 500);
-        }
-    }
+   
 }
 
