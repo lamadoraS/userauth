@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
-    <title></title>
+    <title>Login</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
@@ -15,7 +14,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <!-- Icon Font Stylesheet -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
@@ -29,10 +28,27 @@
 
     <!-- Template Stylesheet -->
     <link href="assets/css/style.css" rel="stylesheet">
-    <script src="assets/js/sweetalert.min.js"></script>
+    <script>
+       const token = localStorage.getItem('accessToken');
+       
+       if (token) {
+           window.location.href = '/dashboard';
+       }
+    </script>
+    
 </head>
 
 <body>
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
     <div class="container-xxl position-relative bg-white d-flex p-0">
         <!-- Spinner Start -->
         <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
@@ -42,88 +58,58 @@
         </div>
         <!-- Spinner End -->
 
-
-        <!-- Sign Up Start -->
+        
+        <!-- Sign In Start -->
         <div class="container-fluid">
             <div class="row h-100 align-items-center justify-content-center" style="min-height: 100vh;">
                 <div class="col-12 col-sm-8 col-md-6 col-lg-5 col-xl-4">
                     <div class="bg-light rounded p-4 p-sm-5 my-4 mx-3">
                         <div class="d-flex align-items-center justify-content-center">
                             <div class="text-center">
-                                <h3>Sign Up</h3>
+                                <h3>Verify Email</h3>
                             </div>
                         </div>
-                        <form id="signUpForm" method="post">
-                        
-                            <div class="form-floating mb-3">
-                                <input type="text" name="first_name" class="form-control" id="floatingText1" placeholder="First Name">
-                                <label for="floatingText">First Name:</label>
-                            </div>
-                            <div class="form-floating mb-3">
-                                <input type="text" name="last_name" class="form-control" id="floatingText" placeholder="Last Name">
-                                <label for="floatingText">Last Name:</label>
-                            </div>
+                        <form action="/verifyEmail" method="POST" enctype="multipart/form-data">
+                            @csrf
                             <div class="form-floating mb-3">
                                 <input type="email" name="email" class="form-control" id="floatingInput" placeholder="name@example.com">
                                 <label for="floatingInput">Email address</label>
                             </div>
-                            <div class="form-floating mb-3">
-                                <input type="number" name="phone_number" class="form-control" id="floatingInput" placeholder="Phone Number">
-                                <label for="floatingInput">Phone Number</label>
+                            <div class="d-flex align-items-center justify-content-between mb-4">
+                             
                             </div>
-                            <div class="form-floating mb-3">
-                                <input type="file" name="image" class="form-control" id="floatingInput" placeholder="Profile Picture">
-                                <label for="floatingInput">Profile Picture</label>
-                            </div>
-                            <div class="form-floating mb-4">
-                                <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="Password">
-                                <label for="floatingPassword">Password</label>
-                                <input type ="hidden" name="role" class="form-control" value="guest">
-                            </div>
-                            <button type="submit" class="btn btn-primary py-3 w-100 mb-4">Sign Up</button>
-                            <p class="text-center mb-0">Already have an Account? <a href="{{ url('/dashboard') }}">Sign In</a></p>
+                            <button type="submit" class="btn btn-primary py-3 w-100 mb-4">Forgot Password</button>
+                            <p class="text-center mb-0">Remember Password? <a href="{{ url('/login') }}">Login</a></p>
+                            <div id="message"></div>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Sign Up End -->    
 
-        <script>
-    document.getElementById('signUpForm').addEventListener('submit', function(event) {
-        event.preventDefault(); 
-        const formData = new FormData(this);
-
-        fetch('http://127.0.0.1:8000/api/auth/register', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                Accept: 'application/json',
-            }
-        }).then(response => {
-            return response.json();
-        }).then(data => {
-            if(data.status && data.message === "User Created Successfully"){
-                swal({
-                    title: "Success!",
-                    text: "User created successfully. You will be redirected to the login page to log in with your credentials.",
-                    icon: "success",
-                    button: "Ok"
-                }).then(() => {
-                    window.location.href = '/'; 
-                });
-            } else {
-                swal({
-                    title: "Error!",
-                    text: data.message || "An error occurred while creating the user.",
-                    icon: "error",
-                    button: "Try Again"
-                });
-            }
-        
-        });
-    });
-</script>
+        <!-- OTP Modal -->
+        <div class="modal fade" id="otpModal" tabindex="-1" aria-labelledby="otpModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="otpModalLabel">Enter OTP</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="otpForm" method="post">
+                            <div class="mb-3">
+                                <label for="otp_code" class="form-label">OTP:</label>
+                                <input type="text" name="otp_code" class="form-control" id="otp_code" placeholder="Enter OTP" required>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100">Verify OTP</button>
+                            <div id="otpmessage"></div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Sign In End -->
+    </div>
 
 
     <!-- JavaScript Libraries -->
@@ -140,5 +126,4 @@
     <!-- Template Javascript -->
     <script src="assets/js/main.js"></script>
 </body>
-
 </html>

@@ -28,6 +28,14 @@
 
     <!-- Template Stylesheet -->
     <link href="assets/css/style.css" rel="stylesheet">
+    <script>
+       const token = localStorage.getItem('accessToken');
+       
+       if (token) {
+           window.location.href = '/dashboard';
+       }
+    </script>
+    
 </head>
 
 <body>
@@ -61,11 +69,11 @@
                                 <label for="floatingPassword">Password</label>
                             </div>
                             <div class="d-flex align-items-center justify-content-between mb-4">
-                                <div class="form-check">
+                                <!-- <div class="form-check">
                                     <input type="checkbox" class="form-check-input" id="exampleCheck1">
                                     <label class="form-check-label" for="exampleCheck1">Check me out</label>
-                                </div>
-                                <a href="">Forgot Password</a>
+                                </div> -->
+                                <a href="{{url('/forgot-password')}}">Forgot Password</a>
                             </div>
                             <button type="submit" class="btn btn-primary py-3 w-100 mb-4">Sign In</button>
                             <p class="text-center mb-0">Don't have an Account? <a href="{{ url('/register') }}">Sign Up</a></p>
@@ -92,8 +100,6 @@
                             </div>
                             <button type="submit" class="btn btn-success w-100">Verify OTP</button>
                             <div id="otpmessage"></div>
-                            <div id="timer" class="text-center mt-3"></div>
-                            <button type="button" class="btn btn-link mt-3" id="resendOtpButton">Resend OTP</button>
                         </form>
                     </div>
                 </div>
@@ -103,111 +109,63 @@
     </div>
 
     <script>
-        document.getElementById('signInForm').addEventListener('submit', function(event) {
-            event.preventDefault();
+    document.getElementById('signInForm').addEventListener('submit', function(event) {
+        event.preventDefault();
 
-            const formData = new FormData(this);
+        const formData = new FormData(this);
 
-            fetch("http://127.0.0.1:8000/api/auth/login", {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    Accept: 'application/json',
-                }
-            }).then(response => {
-                return response.json();
-            }).then(data => {
-                if (data.token) {
-                    localStorage.setItem('token', data.token);
-                    document.querySelector('.container-xxl').style.display = 'none';
-                    new bootstrap.Modal(document.getElementById('otpModal')).show();
-                    startTimer(60); // Start 1 minute timer
-                } else {
-                    document.getElementById('message').innerText = data.message;
-                    document.getElementById('message').style.color = "red";
-                }
-            }).catch(error => {
-                console.error("Something went wrong with your fetch", error);
-            });
-        });
-
-        document.getElementById('otpForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-
-            const formData = new FormData(this);
-            const token = localStorage.getItem('token');
-
-            formData.append('token', token);
-
-            fetch("/api/verifyOTP", {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    Accept: 'application/json',
-                    Authorization: 'Bearer ' + token,
-                }
-            }).then(response => {
-                return response.json();
-            }).then(data => {
-                if (data.status) {
-                    localStorage.setItem('accessToken', data.accessToken);
-                    window.location.href = '/dashboard';
-                } else {
-                    document.getElementById('otpmessage').textContent = data.message;
-                    document.getElementById('otpmessage').style.color = "red";
-                }
-            }).catch(error => {
-                console.error('Error:', error);
-            });
-        });
-
-        document.getElementById('resendOtpButton').addEventListener('click', function() {
-     const token = localStorage.getItem('token'); // Retrieve token from localStorage
-
-      fetch("/api/verifyOTP", {
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            Authorization: 'Bearer ' + token,
-        }
-     }).then(response => {
-        return response.json();
-     }).then(data => {
-        if (data.status) {
-            document.getElementById('otpmessage').textContent = "New OTP sent";
-            document.getElementById('otpmessage').style.color = "green";
-            document.getElementById('otp_code').disabled = false;
-            startTimer(60); // Restart the timer
-        } else {
-            document.getElementById('otpmessage').textContent = data.message;
-            document.getElementById('otpmessage').style.color = "red";
-        }
-     }).catch(error => {
-        console.error('Error:', error);
+        fetch("http://127.0.0.1:8000/api/auth/login", {
+            method: 'POST',
+            body: formData,
+            headers: {
+                Accept: 'application/json',
+            }
+        }).then(response => {
+            return response.json();
+        }).then(data => {
+            if (data.token) {
+                localStorage.setItem('token', data.token);
+                document.querySelector('.container-xxl').style.display = 'none';
+                new bootstrap.Modal(document.getElementById('otpModal')).show();
+                startTimer(60); // Start 1 minute timer
+            } else {
+                document.getElementById('message').innerText = data.message;
+                document.getElementById('message').style.color = "red";
+            }
+        }).catch(error => {
+            console.error("Something went wrong with your fetch", error);
         });
     });
 
-        function startTimer(duration) {
-            let timer = duration, minutes, seconds;
-            const interval = setInterval(() => {
-                minutes = parseInt(timer / 60, 10);
-                seconds = parseInt(timer % 60, 10);
+    document.getElementById('otpForm').addEventListener('submit', function(event) {
+        event.preventDefault();
 
-                minutes = minutes < 10 ? "0" + minutes : minutes;
-                seconds = seconds < 10 ? "0" + seconds : seconds;
+        const formData = new FormData(this);
+        const token = localStorage.getItem('token');
 
-                document.getElementById('timer').textContent = minutes + ":" + seconds;
+        formData.append('token', token);
 
-                if (--timer < 0) {
-                    clearInterval(interval);
-                    document.getElementById('otp_code').disabled = true;
-                    document.getElementById('otpmessage').textContent = "OTP expired";
-                    document.getElementById('otpmessage').style.color = "red";
-                    invalidateOTP();
-                }
-            }, 1000);
-    }
-        
+        fetch("/api/verifyOTP", {
+            method: 'POST',
+            body: formData,
+            headers: {
+                Accept: 'application/json',
+                Authorization: 'Bearer ' + token,
+            }
+        }).then(response => {
+            return response.json();
+        }).then(data => {
+            if (data.status) {
+                localStorage.setItem('accessToken', data.accessToken);
+                window.location.href = '/dashboard';
+            } else {
+                document.getElementById('otpmessage').textContent = data.message;
+                document.getElementById('otpmessage').style.color = "red";
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+        });
+    });
     </script>
 
     <!-- JavaScript Libraries -->

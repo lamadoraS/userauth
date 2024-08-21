@@ -14,7 +14,6 @@
         
         <div class="actions">
             <a href="{{ url('/login') }}" class="btn-primary">Login</a>
-            <a href="" class="btn-secondary">Register</a>
         </div>
     </div>
 </body>
