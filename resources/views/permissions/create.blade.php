@@ -24,36 +24,22 @@
                     <div class="row">
                         <!-- Permission Name Input -->
                         <div class="col-xs-12 col-sm-12 col-md-12">
-                        <div class="form-group">
-                            <strong>Permissions Name:</strong>
-                            <select name="permission_name" class="form-control">
-                                <option value="">Select Permission</option>
-                                <option value="create_user">Create User</option>
-                                <option value="delete_user">Delete User</option>
-                                <option value="update_user">Update User</option>
-                                <option value="create_role">Create Role</option>
-                                <option value="update_role">Update User</option>
-                                <option value="delete_role">Delete Role</option>
-                                <option value="create_permissions">Create Permissions</option>
-                                <option value="update_permissions">Update Permissions</option>
-                                <option value="delete_permissions">Delete Permissions</option>
-
-                                <!-- Add more options as needed -->
-                            </select>
+                            <div class="form-group">
+                                <strong>Permission Name:</strong>
+                                <input type="text" name="permission_name" class="form-control" placeholder="Enter Permission Name">
+                            </div>
                         </div>
-                    </div>
 
                         <!-- Checkboxes -->
                         <div class="col-xs-12 col-sm-12 col-md-12">
                             <div class="form-group">
                                 <strong>Roles:</strong><br>
                                 @foreach ($roles as  $role)
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" name="role_id[]" id="read" value="{{$role->id}}">
-                                    <label class="form-check-label" for="read">{{$role->role_name}}</label>
-                                </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="role_id[]" id="role_{{$role->id}}" value="{{$role->id}}">
+                                        <label class="form-check-label" for="role_{{$role->id}}">{{$role->role_name}}</label>
+                                    </div>
                                 @endforeach
-                                
                             </div>
                         </div>
 
