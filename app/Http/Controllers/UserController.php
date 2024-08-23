@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\NewUserMail;
+use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -76,9 +77,10 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+        public function show($id)
     {
-        //
+        $user = User::with('roles')->findOrFail($id);
+        return view('users.show', compact('user'));
     }
 
     /**
@@ -132,21 +134,50 @@ class UserController extends Controller
          return redirect()->route('users.index')->with('success', 'User deleted successfully');
     }
 
-    public function userCreate($id){
-        // dd($id);
+    public function userCreate($id)
+    {
 
         $check = Role::with('permissions')->find($id);
+        $permissions = $check->permissions()->where('permission_name','=', 'create_user');
 
-        if($check->permissions()->exists()){
+        if($permissions->exists()){
             $roles = Role::all();
-
-            // Pass the roles to the view
             return view('users.create', compact('roles'));
         }else{
             abort(403);
         }
-        // dd($check)
+ 
        
         
     }
+
+    public function userEdit($id){
+        
+    }
+
+           // dd($permissions);
+       
+        // dd($permissions[2]->permission_name);
+
+        // foreach($permissions as $permission){
+        //     // dd($permission->permission_name);
+        //     // if($permission->permission_name === "create_user"){
+        //     //     $roles = Role::all();
+        //     //     return view('users.create', compact('roles'));
+        //     // }
+        //     //    return abort(403);
+            
+        // }
+        // dd);
+        // foreach($check->permission()->get())
+        // if($check->permissions()->exists()){
+        //     $roles = Role::all();
+
+        //     // Pass the roles to the view
+          
+        // }else{
+        //     abort(403);
+        // }
+        
+    
 }

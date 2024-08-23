@@ -31,10 +31,47 @@
     <link href='{{asset("assets/css/style.css")}}' rel="stylesheet">
     <script>
        const token = localStorage.getItem('accessToken');
-       
+
        if (!token) {
            window.location.href = '/';
        }
+
+       document.addEventListener('DOMContentLoaded', function(){
+        fetch('/api/user', {
+            method: 'GET',
+            headers: {
+                Authorization: 'Bearer ' + localStorage.getItem('token'),
+                application: 'application/json',
+            }
+        }).then(response => response.json())
+        .then(response => {
+                if(response){
+                    document.getElementById('FirstName').innerHTML = response.first_name;
+                    document.getElementById('firstName').innerHTML = response.first_name;
+
+
+                    if(response.image){
+                    document.getElementById('Image').src = ('storage/' + response.image);
+                     document.getElementById('image').src = ('storage/' + response.image);
+                    }else{
+                        document.getElementById('Image').src = `{{asset('assets/img/icon.jpg')}}` ;
+                        document.getElementById('image').src = `{{asset('assets/img/icon.jpg')}}`;
+                    }
+                   
+                  if(response.role_id == 1){
+                     document.getElementById('Role').innerHTML = 'Admin';
+                    }else if(response.role_id == 2)
+                    {
+                    document.getElementById('Role').innerHTML = 'User'
+                    }else if(response.role_id == 3){
+                    document.getElementById('Role').innerHTML = 'Api Consumer'
+                    }else if(response.role_id == 4){
+                    document.getElementById('Role').innerHTML = 'Guest'
+                    }
+                }
+                
+        })
+       })
     </script>
 </head>
 
@@ -58,12 +95,12 @@
                 </a>
                 <div class="d-flex align-items-center ms-4 mb-4">
                     <div class="position-relative">
-                        <img class="rounded-circle" src={{asset("assets/img/user.jpg")}} alt="" style="width: 40px; height: 40px;">
+                        <img id="Image" class="rounded-circle" src=""  alt="" style="width: 40px; height: 40px;">
                         <div class="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
                     </div>
                     <div class="ms-3">
-                        <h6 class="mb-0">Jhon Doe</h6>
-                        <span>Admin</span>
+                        <h6 class="mb-0" id="FirstName" ></h6>
+                        <span id="Role"></span>
                     </div>
                 </div>
                 <div class="navbar-nav w-100">
@@ -77,6 +114,9 @@
                 </div>
                 <div class="navbar-nav w-100">
                     <a href="{{ route('permissions.index') }}" class="nav-item nav-link"><i class="fa fa-lock me-2"></i>Permissions</a>
+                </div>
+                <div class="navbar-nav w-100">
+                    <a href="{{ route('tokens.index') }}" class="nav-item nav-link"><i class="fa fa-shield-alt me-2"></i>Tokens</a>
                 </div>
                 
             </nav>
@@ -106,16 +146,16 @@
                         </a>
                     </div>
 
-                    <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                            <img class="rounded-circle me-lg-2" src='{{asset("assets/img/user.jpg")}}' alt="" style="width: 40px; height: 40px;">
-                            <span class="d-none d-lg-inline-flex">John Doe</span>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
-                        <!-- <a href="#" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#profileModal">My Profile</a> -->
-                        <a href="#" class="dropdown-item" onclick="confirmLogout()">Log Out</a>
-                        </div>
-                    </div>
+             <div class="nav-item dropdown">
+                <a href="#" id="userDropdown" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                <img id="image" class="rounded-circle me-lg-2" src='' alt="" style="width: 40px; height: 40px;">
+                <span id="firstName" class="d-none d-lg-inline-flex"></span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
+                <a href="#" class="dropdown-item" onclick="confirmLogout()">Log Out</a>
+                </div>
+            </div>
+
                 </div>
             </nav>
             <!-- Navbar End -->
@@ -145,7 +185,6 @@
     <!-- Template Javascript -->
     <script src={{asset("assets/js/main.js")}}></script>
     <script src='{{asset("assets/js/sweetalert.min.js")}}'></script>
-
     <script>
     function confirmLogout() {
         swal({
