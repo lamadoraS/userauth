@@ -24,7 +24,9 @@ class RoleController extends Controller
     public function create()
     {
         //
-       return view('roles.create');
+
+        // Pass the roles to the view
+        return view('roles.create');
 
     }
 
@@ -79,4 +81,23 @@ class RoleController extends Controller
         $role->delete();
          return redirect()->route('roles.index');
     }
+
+    public function roleCreate($id)
+    {
+
+        $check = Role::with('permissions')->find($id);
+        $permissions = $check->permissions()->where('permission_name','=', 'create_role');
+
+        if($permissions->exists()){
+            $roles = Role::all();
+            return view('roles.create', compact('roles'));
+        }else{
+            abort(403);
+        }
+ 
+       
+        
+    }
+
+    
 }

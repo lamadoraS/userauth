@@ -31,6 +31,13 @@
                                 <option value="create_user">Create User</option>
                                 <option value="delete_user">Delete User</option>
                                 <option value="update_user">Update User</option>
+                                <option value="create_role">Create Role</option>
+                                <option value="update_role">Update User</option>
+                                <option value="delete_role">Delete Role</option>
+                                <option value="create_permissions">Create Permissions</option>
+                                <option value="update_permissions">Update Permissions</option>
+                                <option value="delete_permissions">Delete Permissions</option>
+
                                 <!-- Add more options as needed -->
                             </select>
                         </div>

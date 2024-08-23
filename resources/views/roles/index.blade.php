@@ -1,15 +1,36 @@
 @extends('dashboard')
 @section('table')
+<script>
+    document.addEventListener('DOMContentLoaded', function(){
+        fetch('/api/user', {
+            method: 'GET',
+            headers: {
+                Authorization: 'Bearer ' + localStorage.getItem('token'),
+                accept: 'application/json',
+            }
+        }).then(response => response.json())
+        .then(response => {
+            console.log(response);
+            if(response){
+                  document.getElementById('createRole').innerHTML = `<div class="pull-right mb-2">
+                    <a class="btn btn-success" href="/createRole/${response.role_id}">Add Roles</a>
+            </div> `;
+
+            // document.getElementById('editUser').innerHTML = ` <a class="btn btn-primary btn-sm" href="/userRoleEdit/${response.role_id}">Edit</a>`
+            }
+          
+        })
+    });
+
+</script>
 <div class="container mt-2">
     <div class="row">
         <div class="col-lg-12 margin-tb">
             <div class="pull-left">
                 <h2>Roles</h2>
             </div>
+            <div id="createRole"></div>
             
-            <div class="pull-right mb-2">
-                    <a class="btn btn-success" href="{{ route('roles.create') }}">Add Roles</a>
-            </div>
             
         </div>
     </div>

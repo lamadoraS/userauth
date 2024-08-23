@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Token;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class TokenController extends Controller
 {
@@ -12,7 +14,8 @@ class TokenController extends Controller
      */
     public function index()
     {
-        //
+        $tokens = Token::simplePaginate(5); 
+        return view('tokens.index', compact('tokens'));
     }
 
     /**
@@ -20,7 +23,7 @@ class TokenController extends Controller
      */
     public function create()
     {
-        //
+        // Optionally, return a view with a form to create a token.
     }
 
     /**
@@ -28,7 +31,22 @@ class TokenController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Validate incoming request data
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'expiration' => 'required|date'
+        ]);
+
+        // Generate a new token value
+        $tokenValue = Str::random(60);
+
+        // Create or update the token for the specified user
+        Token::updateOrCreate(
+            ['user_id' => $request->input('user_id')],
+            ['token_value' => $tokenValue, 'expiration' => $request->input('expiration')]
+        );
+
+        return redirect()->route('tokens.index')->with('success', 'Token created/updated successfully.');
     }
 
     /**
@@ -36,7 +54,7 @@ class TokenController extends Controller
      */
     public function show(Token $token)
     {
-        //
+        // Optionally, return a view to show token details.
     }
 
     /**
@@ -44,7 +62,7 @@ class TokenController extends Controller
      */
     public function edit(Token $token)
     {
-        //
+        // Optionally, return a view with a form to edit the token.
     }
 
     /**
@@ -52,7 +70,7 @@ class TokenController extends Controller
      */
     public function update(Request $request, Token $token)
     {
-        //
+        // Optionally, update the token details.
     }
 
     /**
@@ -60,6 +78,7 @@ class TokenController extends Controller
      */
     public function destroy(Token $token)
     {
-        //
+        $token->delete();
+        return redirect()->route('tokens.index')->with('success', 'Token deleted successfully.');
     }
 }

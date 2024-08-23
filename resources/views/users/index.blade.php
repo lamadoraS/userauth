@@ -15,10 +15,13 @@
                 document.getElementById('createUser').innerHTML = `<div class="pull-right mb-2">
                     <a class="btn btn-success" href="/userRole/${response.role_id}">Add User</a>
             </div> `;
+
+            // document.getElementById('editUser').innerHTML = ` <a class="btn btn-primary btn-sm" href="/userRoleEdit/${response.role_id}">Edit</a>`
             }
           
         })
     });
+
 </script>
 <div class="container mt-2">
     <div class="row">
@@ -74,11 +77,15 @@
                         <td> {{$users->roles->role_name}}</td>
                         <td>
                         <form id="delete-form-{{ $users->id }}" action="{{ route('users.destroy', $users->id) }}" method="POST">
-                            <a class="btn btn-primary btn-sm" href="{{ route('users.edit', $users->id) }}">Edit</a>
+                          <div id="editUser" ></div>
+                          <a class="btn btn-primary btn-sm" href="{{ route('users.edit', $users->id) }}">Edit</a>
+
                             @csrf
                             @method('DELETE')
                             <!-- Change the button type to "button" -->
                         <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete({{ $users->id }})">Delete</button>
+                        <a class="btn btn-info btn-sm" href="{{ route('users.show', $users->id) }}">View</a>
+
                     </form>
 
                     </td>
