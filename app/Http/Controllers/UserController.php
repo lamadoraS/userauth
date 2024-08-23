@@ -14,9 +14,12 @@ use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
+
+    public $id;
     /**
      * Display a listing of the resource.
      */
+
     public function index()
     {
 
@@ -27,16 +30,16 @@ class UserController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
-    {
-        //
-        // dd();
-        // dd($request->all());
-        $roles = Role::all();
+    // public function create()
+    // {
+    //     //
+    //     // dd();
+    //     // dd($request->all());
+    //     $roles = Role::all();
 
-        // Pass the roles to the view
-        return view('users.create', compact('roles'));
-    }
+    //     // Pass the roles to the view
+    //     return view('users.create', compact('roles'));
+    // }
 
     /**
      * Store a newly created resource in storage.
@@ -77,7 +80,7 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-        public function show($id)
+    public function show($id)
     {
         $user = User::with('roles')->findOrFail($id);
         return view('users.show', compact('user'));
@@ -86,9 +89,10 @@ class UserController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(User $user)
+    public function edit($id)
     {
         //
+        $user = User::findorFail($id);
         $roles = Role::all();
 
     // Pass the user and the roles to the view
@@ -151,9 +155,23 @@ class UserController extends Controller
         
     }
 
-    public function userEdit($id){
-        
+    public function userEdit($id, $userId){
+        // dd($id, $userId);
+
+        $this->id = $userId;
+
+        $check = Role::with('permissions')->find($id);
+        $permissions = $check->permissions()->where('permission_name','=', 'update_user');
+
+        if($permissions->exists()){
+            return $this->edit($this->id);
+        }else{
+            abort(403);
+        }
+
     }
+
+    
 
            // dd($permissions);
        

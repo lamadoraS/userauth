@@ -68,8 +68,7 @@
                     }else if(response.role_id == 4){
                     document.getElementById('Role').innerHTML = 'Guest'
                     }
-                }
-                
+                }                
         })
        })
     </script>
@@ -192,7 +191,10 @@
             buttons: ["Cancel", "Logout"],
         }).then((value) => {
             if (value) {
-                localStorage.removeItem('accessToken');
+                localStorage.removeItem('token');
+                localStorage.removeItem('editUserId');
+                localStorage.removeItem('role_id');
+
                 window.location.href = '/';
             }
         });

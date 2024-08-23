@@ -11,17 +11,27 @@
         }).then(response => response.json())
         .then(response => {
             console.log(response);
+            let role = localStorage.setItem('role_id', response.role_id);
             if(response){
                 document.getElementById('createUser').innerHTML = `<div class="pull-right mb-2">
                     <a class="btn btn-success" href="/userRole/${response.role_id}">Add User</a>
-            </div> `;
-
-            // document.getElementById('editUser').innerHTML = ` <a class="btn btn-primary btn-sm" href="/userRoleEdit/${response.role_id}">Edit</a>`
+            </div> `; 
+ 
             }
           
         })
+
+        
     });
 
+
+function editUser(I){
+let editUser = localStorage.setItem('editUserId', I);
+let thisRoleId =localStorage.getItem('role_id');
+
+window.location.href = '/userRoleEdit/' + thisRoleId + '/' + I;
+
+}
 </script>
 <div class="container mt-2">
     <div class="row">
@@ -77,9 +87,12 @@
                         <td> {{$users->roles->role_name}}</td>
                         <td>
                         <form id="delete-form-{{ $users->id }}" action="{{ route('users.destroy', $users->id) }}" method="POST">
-                          <div id="editUser" ></div>
-                          <a class="btn btn-primary btn-sm" href="{{ route('users.edit', $users->id) }}">Edit</a>
+                              <!-- <a class="btn btn-primary btn-sm" href="{{route('users.edit', $users->id)}}">Edit</a> -->
+                        <a class="btn btn-primary btn-sm" href="javascript:void(0);" onclick="editUser({{ $users->id }})">Edit</a>
 
+                    
+
+                          
                             @csrf
                             @method('DELETE')
                             <!-- Change the button type to "button" -->

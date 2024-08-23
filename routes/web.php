@@ -33,7 +33,7 @@ Route::resource('tokens', TokenController::class);
 
 //user
 Route::get('/userRole/{id}', [UserController::class, 'userCreate'])->name('userRole');
-Route::get('/userRoleEdit/{id}', [UserController::class, 'userEdit'])->name('userEdit');
+Route::get('/userRoleEdit/{id}/{userId}', [UserController::class, 'userEdit'])->name('userEdit');
 //role
 Route::get('/createRole/{id}', [RoleController::class, 'roleCreate'])->name('createRole');
 
