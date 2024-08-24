@@ -114,7 +114,7 @@
 
         const formData = new FormData(this);
 
-        fetch("http://127.0.0.1:8000/api/auth/login", {
+        fetch("/api/auth/login", {
             method: 'POST',
             body: formData,
             headers: {
