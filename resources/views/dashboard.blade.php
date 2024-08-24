@@ -191,7 +191,7 @@
             buttons: ["Cancel", "Logout"],
         }).then((value) => {
             if (value) {
-                localStorage.removeItem('token');
+                localStorage.removeItem('accessToken');
                 localStorage.removeItem('editUserId');
                 localStorage.removeItem('role_id');
 
