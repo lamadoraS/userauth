@@ -47,7 +47,6 @@ class PermissionSeeder extends Seeder
                 'permission_name' => 'delete_permission',
             ],
             
-
             ]);
         
     }

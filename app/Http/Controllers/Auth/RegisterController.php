@@ -23,7 +23,7 @@ class RegisterController extends Controller
                 'email' => 'required|email|unique:users,email',
                 'phone_number'=> 'required|digits:11',
                 'image'=> 'nullable|image|mimes:jpg,png,jpeg|max:2048', // Validate the image
-                 'password' => 'required'
+                 'password' => 'required|string|min:8',
             ]);
 
            
@@ -44,20 +44,18 @@ class RegisterController extends Controller
             }
            
 
-            $password = $request->input('password');
-
             $user = User::create([
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
                 'email' => $request->email,
                 'phone_number'=> $request->phone_number,
-                'password' => Hash::make($password),
+                'password' => Hash::make($request->input('password')),
                 'role_id' => 4,
                 'image' => $imagePath // Save the image path to the database
             ]);
 
 
-            // Mail::to($user->email)->send(new NewUserMail($user, $password));
+            Mail::to($user->email)->send(new NewUserMail($user, $password));
 
             return response()->json([
                 'status' => true,

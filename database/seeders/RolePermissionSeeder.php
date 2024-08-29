@@ -30,6 +30,7 @@ class RolePermissionSeeder extends Seeder
             'create_permission' => 8,
             'update_permission' => 9,
             'delete_permission' => 10,
+
         ];
 
         // Admin has all permissions
@@ -43,7 +44,6 @@ class RolePermissionSeeder extends Seeder
         // Regular User, API Consumer, and Guest have limited permissions
         $limitedPermissions = [
             'update_user',
-            'delete_user',
             'show_user',
         ];
 

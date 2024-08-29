@@ -1,6 +1,13 @@
 @extends('dashboard')
 @section('table')
 <script>
+    
+    let roleId = localStorage.getItem('role_id');
+    let currentUser = localStorage.getItem('user_id');
+
+    if(roleId == 2){
+        window.location.href = 'byRole/' + currentUser;
+    }
     document.addEventListener('DOMContentLoaded', function(){
         fetch('/api/user', {
             method: 'GET',
@@ -16,12 +23,49 @@
                     <a class="btn btn-success" href="/createRole/${response.role_id}">Add Roles</a>
             </div> `;
 
-            // document.getElementById('editUser').innerHTML = ` <a class="btn btn-primary btn-sm" href="/userRoleEdit/${response.role_id}">Edit</a>`
             }
           
         })
     });
+    function editRole(I){
+    let editRole = localStorage.setItem('editRoleId', I);
+    let thisRoleId =localStorage.getItem('role_id');
 
+    window.location.href = '/editRole/' + thisRoleId + '/' + I;
+
+    }
+    function confirmDelete(roleId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                deleteRole(roleId); // Call deleteRole function with the roleId
+            }
+        });
+    }
+
+    function deleteRole(roleId) {
+        // Store the roleId in localStorage
+        localStorage.setItem('deleteRoleId', roleId);
+
+        // Retrieve the role_id from localStorage
+        let thisRoleId = localStorage.getItem('role_id');
+
+        // Ensure that role_id exists in localStorage
+        if (thisRoleId) {
+            // Redirect to the delete URL
+            window.location.href = '/DeleteRole/' + thisRoleId + '/' + roleId;
+        } else {
+            console.error('Role ID not found in localStorage.');
+        }
+    }
+    
 </script>
 <div class="container mt-2">
     <div class="row">
@@ -62,7 +106,8 @@
                         <td>{{ $roles->role_name }}</td>
                         <td>
                         <form id="delete-form-{{ $roles->id }}" action="{{ route('roles.destroy', $roles->id) }}" method="POST">
-                            <a class="btn btn-primary btn-sm" href="{{ route('roles.edit', $roles->id) }}">Edit</a>
+                        <a class="btn btn-primary btn-sm" href="javascript:void(0);" onclick="editRole({{ $roles->id }})">Edit</a>
+                            
                             @csrf
                             @method('DELETE')
                             <!-- Change the button type to "button" -->
@@ -84,7 +129,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
+<!-- <script>
 function confirmDelete(roleId) {
     Swal.fire({
         title: 'Are you sure?',
@@ -100,5 +145,5 @@ function confirmDelete(roleId) {
         }
     })
 }
-</script>
+</script> -->
 @endsection

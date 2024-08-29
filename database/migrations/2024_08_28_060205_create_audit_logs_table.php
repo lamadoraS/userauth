@@ -11,21 +11,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tokens', function (Blueprint $table) {
+        Schema::create('audit_logs', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->string('token_value')->unique();
-            $table->timestamp('expiration');
+            $table->foreignId('user_id'); 
+             $table->string('action');
+            $table->timestamp('Timestamp')->userCurrent();
             $table->timestamps();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
+
+
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('token');
+        Schema::dropIfExists('audit_logs');
     }
 };

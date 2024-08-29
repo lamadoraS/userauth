@@ -29,7 +29,7 @@
     <!-- Template Stylesheet -->
     <link href="assets/css/style.css" rel="stylesheet">
     <script>
-       const token = localStorage.getItem('accessToken');
+       const token = localStorage.getItem('token');
        
        if (token) {
            window.location.href = '/dashboard';
@@ -132,6 +132,7 @@
                 document.getElementById('message').innerText = data.message;
                 document.getElementById('message').style.color = "red";
             }
+            
         }).catch(error => {
             console.error("Something went wrong with your fetch", error);
         });
@@ -156,12 +157,25 @@
             return response.json();
         }).then(data => {
             if (data.status) {
-                localStorage.setItem('accessToken', data.accessToken);
+                if(data.role_id == 2){
+                 localStorage.setItem('user_id', data.user_id);
+                 localStorage.setItem('role_id', data.role_id);
+                localStorage.setItem('token', data.token);
+                window.location.href = '/byRole/' + localStorage.getItem('user_id'); 
+            }else{
+                localStorage.setItem('token', data.token);
                 window.location.href = '/dashboard';
-            } else {
+                 } 
+            }else{
                 document.getElementById('otpmessage').textContent = data.message;
                 document.getElementById('otpmessage').style.color = "red";
             }
+        
+          
+               
+            
+
+
         }).catch(error => {
             console.error('Error:', error);
         });

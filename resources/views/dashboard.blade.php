@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -9,7 +9,7 @@
     <meta content="" name="description">
 
     <!-- Favicon -->
-    <link href="assets/img/favicon.ico" rel="icon">
+    <link href="assets/img/favicon.icon" rel="icon">
 
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,11 +30,12 @@
     <!-- Template Stylesheet -->
     <link href='{{asset("assets/css/style.css")}}' rel="stylesheet">
     <script>
-       const token = localStorage.getItem('accessToken');
+       const token = localStorage.getItem('token');
 
        if (!token) {
            window.location.href = '/';
        }
+       
 
        document.addEventListener('DOMContentLoaded', function(){
         fetch('/api/user', {
@@ -45,6 +46,7 @@
             }
         }).then(response => response.json())
         .then(response => {
+           
                 if(response){
                     document.getElementById('FirstName').innerHTML = response.first_name;
                     document.getElementById('firstName').innerHTML = response.first_name;
@@ -68,10 +70,41 @@
                     }else if(response.role_id == 4){
                     document.getElementById('Role').innerHTML = 'Guest'
                     }
-                }                
+
+                    if(response.role_id == 1){
+                        document.getElementById('navigationBar').innerHTML =  `  <div class="navbar-nav w-100">
+                <a href="{{ url('/index') }}" class="nav-item nav-link "><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
+                <div class="navbar-nav w-100">
+                <a href="{{ route('users.index') }}" class="nav-item nav-link"><i class="fa fa-user me-2"></i>User</a>
+                <a href="{{ route('roles.index') }}" class="nav-item nav-link"><i class="fa fa-key me-2"></i>Roles</a>
+                </div>
+                <div class="navbar-nav w-100">
+                    <a href="{{ route('permissions.index') }}" class="nav-item nav-link"><i class="fa fa-lock me-2"></i>Permissions</a>
+                </div>
+                <div class="navbar-nav w-100">
+                    <a href="{{ route('tokens.index') }}" class="nav-item nav-link"><i class="fa fa-shield-alt me-2"></i>Tokens</a>
+                </div>
+                <div class="navbar-nav w-100">
+                    <a href="{{ route('auditlogs.index') }}" class="nav-item nav-link"><i class="fa fa-file-alt me-2"></i>Logs</a>
+                </div>
+                `;
+                
+                    }if(response.role_id == 4){
+                        document.getElementById('routeUser').innerHTML = `<a href="/guestRole/${response.id}" class="nav-item nav-link"><i class="fa fa-user me-2"></i>User</a>`;
+
+                    }if(response.role_id == 2){
+                    document.getElementById('routeUser').innerHTML = `<a href="/byRole/${response.id}" class="nav-item nav-link"><i class="fa fa-user me-2"></i>User</a>`;
+                }else{  
+
+                }
+                
+                }
+
+                                
         })
        })
     </script>
+  
 </head>
 
 <body>
@@ -102,22 +135,15 @@
                         <span id="Role"></span>
                     </div>
                 </div>
+                 <div id="navigationBar"></div>
                 <div class="navbar-nav w-100">
-                    <a href="{{ url('/index') }}" class="nav-item nav-link "><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
+                   
+                    <div id="routeUser" ></div>
                 </div>
-                <div class="navbar-nav w-100">
-                    <a href="{{ route('users.index') }}" class="nav-item nav-link"><i class="fa fa-user me-2"></i>User</a>
                 </div>
-                <div class="navbar-nav w-100">
-                    <a href="{{ route('roles.index') }}" class="nav-item nav-link"><i class="fa fa-key me-2"></i>Roles</a>
-                </div>
-                <div class="navbar-nav w-100">
-                    <a href="{{ route('permissions.index') }}" class="nav-item nav-link"><i class="fa fa-lock me-2"></i>Permissions</a>
-                </div>
-                <div class="navbar-nav w-100">
-                    <a href="{{ route('tokens.index') }}" class="nav-item nav-link"><i class="fa fa-shield-alt me-2"></i>Tokens</a>
-                </div>
-                
+             
+              
+
             </nav>
         </div>
         <!-- Sidebar End -->
@@ -138,12 +164,23 @@
                     <div class="nav-item dropdown">
 
                     </div>
-                    <div class="nav-item">
-                        <a href="#" class="nav-link">
-                        <i class="fa fa-bell me-lg-2"></i>
-                        <span class="d-none d-lg-inline-flex">Notification</span>
+                    @php
+                    use App\Models\AuditLog;
+                    $auditlogs = AuditLog::get();
+                     @endphp
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#notifModal">
+                            <i class="fa fa-bell me-lg-2 position-relative">
+                                <!-- Badge for notification count -->
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{count($auditlogs)}}<!-- Replace with the actual notification count -->
+                                    <span class="visually-hidden">unread messages</span>
+                                </span>
+                            </i>
+                            <span class="d-none d-lg-inline-flex" >Notifications</span>
                         </a>
                     </div>
+                
 
              <div class="nav-item dropdown">
                 <a href="#" id="userDropdown" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
@@ -161,7 +198,7 @@
 
 
              @yield('table')
-            
+             @include('notification-modal')
         </div>
         <!-- Content End -->
 
@@ -192,9 +229,16 @@
         }).then((value) => {
             if (value) {
                 localStorage.removeItem('accessToken');
+                localStorage.removeItem('token');
                 localStorage.removeItem('editUserId');
+                localStorage.removeItem('editRoleId');
+                localStorage.removeItem('deleteUserId');
+                localStorage.removeItem('deleteRoleId');
+                localStorage.removeItem('deletePermissionId');
+                localStorage.removeItem('editPermissionId');
+                localStorage.removeItem('ShowUserId');
                 localStorage.removeItem('role_id');
-
+                localStorage.removeItem('user_id');
                 window.location.href = '/';
             }
         });
