@@ -1,5 +1,13 @@
 @extends('dashboard')
 @section('table')
+<script>
+    let roleId = localStorage.getItem('role_id');
+    let currentUser = localStorage.getItem('user_id');
+
+    if(roleId == 2){
+        window.location.href = 'byRole/' + currentUser;
+    }
+</script>
 <div class="container mt-2">
     <div class="row">
         <div class="col-lg-12 margin-tb">
@@ -35,7 +43,7 @@
         @forelse($tokens as $token)
             <tr>
                 <td>{{ $loop->iteration + $counter }}</td>
-                <td>{{ $token->user->first_name }}</td>
+                <td>{{ $token->user->first_name ?? '' }}</td>
                 <td>{{ Str::limit($token->token_value, 20, '...') }}</td>
                 <td>{{ $token->expires_at }}</td>
                 <td>
