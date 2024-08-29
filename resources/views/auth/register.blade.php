@@ -110,7 +110,7 @@
                     icon: "success",
                     button: "Ok"
                 }).then(() => {
-                    window.location.href = '/'; 
+                    window.location.href = '/login'; 
                 });
             } else {
                 swal({

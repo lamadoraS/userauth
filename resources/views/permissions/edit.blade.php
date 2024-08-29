@@ -1,5 +1,13 @@
 @extends('dashboard')
 @section('table')
+<script>
+      let roleId = localStorage.getItem('role_id');
+            let currentUser = localStorage.getItem('user_id');
+
+            if(roleId == 2){
+                window.location.href = '/dashboard';
+            }
+</script>
 <div class="container mt-2">
         <div class="row">
             <div class="col-lg-12 margin-tb">

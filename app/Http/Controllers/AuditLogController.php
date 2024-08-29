@@ -2,20 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Token;
+use App\Models\AuditLog;
 use Illuminate\Http\Request;
 
-class TokenController extends Controller
+class AuditLogController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index() 
     {
         //
-        $tokens = Token::with('user')->simplePaginate(5); 
+        $auditlogs = AuditLog::with('user')->simplePaginate(5); 
         // dd($auditlogs);
-        return view('tokens.index', compact('tokens'));
+        return view('auditlogs.index', compact('auditlogs'));
     }
 
     /**
@@ -37,7 +37,7 @@ class TokenController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Token $token)
+    public function show(AuditLog $auditLog)
     {
         //
     }
@@ -45,7 +45,7 @@ class TokenController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Token $token)
+    public function edit(AuditLog $auditLog)
     {
         //
     }
@@ -53,7 +53,7 @@ class TokenController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Token $token)
+    public function update(Request $request, AuditLog $auditLog)
     {
         //
     }
@@ -61,10 +61,11 @@ class TokenController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Token $token)
+    public function destroy($id)
     {
-        //
-        $token->delete();
-         return redirect()->route('tokens.index');
+        $auditlogs = AuditLog::findOrFail($id);
+        $auditlogs->delete();
+
+        return redirect()->back()->with('success', 'Audit log deleted successfully.');
     }
 }
