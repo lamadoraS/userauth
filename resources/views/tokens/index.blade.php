@@ -43,7 +43,7 @@
         @forelse($tokens as $token)
             <tr>
                 <td>{{ $loop->iteration + $counter }}</td>
-                <td>{{ $token->user->first_name }}</td>
+                <td>{{ $token->user->first_name ?? '' }}</td>
                 <td>{{ Str::limit($token->token_value, 20, '...') }}</td>
                 <td>{{ $token->expires_at }}</td>
                 <td>
