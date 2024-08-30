@@ -26,6 +26,7 @@ Route::get('/index', [HomeController::class, 'dashboard']);
 Route::get('/', [HomeController::class, 'welcome']);
 Route::get('/login', function () { return view('auth.login'); });
 Route::get('/register', function () {  return view('auth.register'); });
+Route::get('/ems', function () {return view('integrate.ems');} );
 Route::resource('users', UserController::class); 
 Route::resource('roles', RoleController::class); 
 Route::resource('permissions', PermissionController::class); 
@@ -80,6 +81,8 @@ Route::get('/guestRole/{id}', [HomeController::class, 'guestRole']);
 //Generate Token
 
 Route::get('/generateToken/{id}', [UserController::class, 'generate']);
+
+Route::get('/tokenUser/{id}/{name}/{email}/{roleName}', [HomeController::class, 'tokenUser']);
 
 
 

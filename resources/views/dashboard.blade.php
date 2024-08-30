@@ -99,6 +99,8 @@
                             <a href="{{ route('permissions.index') }}" class="nav-item nav-link"><i class="fa fa-lock me-2"></i>Permissions</a>
                             <a href="{{ route('tokens.index') }}" class="nav-item nav-link"><i class="fa fa-shield-alt me-2"></i>Tokens</a>
                             <a href="{{ route('auditlogs.index') }}" class="nav-item nav-link"><i class="fa fa-file-alt me-2"></i>Logs</a>
+                            <a href="{{ url('/ems') }}" class="nav-item nav-link"><i class="fa fa-sync-alt me-2"></i>EMS</a>
+
                         </div>
                     `;
                 }
