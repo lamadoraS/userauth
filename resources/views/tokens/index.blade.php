@@ -8,6 +8,7 @@
         window.location.href = 'byRole/' + currentUser;
     }
 </script>
+
 <div class="container mt-2">
     <div class="row">
         <div class="col-lg-12 margin-tb">
@@ -41,6 +42,7 @@
             $counter = ($tokens->currentPage() - 1) * $tokens->perPage();
         @endphp
         @forelse($tokens as $token)
+            @if($token->user->role_id !== 1) <!-- Only show if the role is not admin -->
             <tr>
                 <td>{{ $loop->iteration + $counter }}</td>
                 <td>{{ $token->user->first_name ?? '' }}</td>
@@ -62,6 +64,7 @@
                     </form>
                 </td>
             </tr>
+            @endif
         @empty
             <tr>
                 <td colspan="6" class="text-center">No Tokens Found</td>

@@ -20,7 +20,7 @@ class LoginController extends Controller
                 'email' => 'required|email',
                  'password' => 'required' 
             ]);
-
+            
             $user = User::where('email', $request->email)->first();
             $token = Token::where('user_id', $user->id);
             $p = $token->first();
@@ -44,7 +44,7 @@ class LoginController extends Controller
                 'otp_code' => $code,
             ]);
 
-            $userPhoneNumber = $user->phone_number; // Assuming you have the user's phone number stored in $user->phone_number
+            $userPhoneNumber = $user->phone_number;
 
             Http::asForm()->post('https://api.semaphore.co/api/v4/messages', [
             'apikey' => env('SEMAPHORE_API_KEY'),

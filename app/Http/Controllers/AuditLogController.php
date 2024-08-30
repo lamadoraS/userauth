@@ -14,7 +14,6 @@ class AuditLogController extends Controller
     {
         //
         $auditlogs = AuditLog::with('user')->simplePaginate(5); 
-        // dd($auditlogs);
         return view('auditlogs.index', compact('auditlogs'));
     }
 
