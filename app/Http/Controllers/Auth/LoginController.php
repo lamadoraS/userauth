@@ -24,7 +24,9 @@ class LoginController extends Controller
             $user = User::where('email', $request->email)->first();
             $token = Token::where('user_id', $user->id);
             $p = $token->first();
+
             $permanentToken = $p?->token_value;
+            
             if($user->role_id != 1 ){
                 if($token->doesntExist()){
                     return response()->json([
@@ -45,12 +47,11 @@ class LoginController extends Controller
             ]);
 
             $userPhoneNumber = $user->phone_number;
-
             Http::asForm()->post('https://api.semaphore.co/api/v4/messages', [
             'apikey' => env('SEMAPHORE_API_KEY'),
             'number' => $userPhoneNumber, 
              'message' => 'This is your OTP Code: ' . $code,
-            ]);
+            ]); 
 
 
             if ($updateResult) {
