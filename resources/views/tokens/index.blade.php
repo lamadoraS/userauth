@@ -4,7 +4,7 @@
     let roleId = localStorage.getItem('role_id');
     let currentUser = localStorage.getItem('user_id');
 
-    if(roleId == 2){
+    if (roleId == 2) {
         window.location.href = 'byRole/' + currentUser;
     }
 </script>
@@ -26,52 +26,54 @@
 
     <div class="container-border">
         <div class="table-responsive">
-        <table class="table table-bordered">
-    <thead class="thead-dark">
-        <tr>
-            <th>#</th>
-            <th>User</th>
-            <th>Token</th>
-            <th>Expiration</th>
-            <th>Status</th> <!-- Added Status Column -->
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        @php
-            $counter = ($tokens->currentPage() - 1) * $tokens->perPage();
-        @endphp
-        @forelse($tokens as $token)
-            @if($token->user->role_id !== 1) <!-- Only show if the role is not admin -->
-            <tr>
-                <td>{{ $loop->iteration + $counter }}</td>
-                <td>{{ $token->user->first_name ?? '' }}</td>
-                <td>{{ Str::limit($token->token_value, 20, '...') }}</td>
-                <td>{{ $token->expires_at }}</td>
-                <td>
-                    @if(now()->greaterThan($token->expires_at))
-                        <span class="badge" style="background-color: #dc3545; color: white;">Expired</span> <!-- Red for Expired -->
-                    @else
-                        <span class="badge" style="background-color: #28a745; color: white;">Active</span> <!-- Green for Active -->
-                    @endif
-                </td>
-
-                <td>
-                    <form id="delete-form-{{ $token->id }}" action="{{ route('tokens.destroy', $token->id) }}" method="POST">
-                        @csrf
-                        @method('DELETE')
-                        <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete({{ $token->id }})">Delete</button>
-                    </form>
-                </td>
-            </tr>
-            @endif
-        @empty
-            <tr>
-                <td colspan="6" class="text-center">No Tokens Found</td>
-            </tr>
-        @endforelse
-    </tbody>
-</table>
+            <table class="table table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>User</th>
+                        <th>Token</th>
+                        <th>Expiration</th>
+                        <th>Status</th> <!-- Added Status Column -->
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php
+                        $counter = ($tokens->currentPage() - 1) * $tokens->perPage();
+                    @endphp
+                    @forelse($tokens as $token)
+                        @php
+                            $user = $token->user;
+                        @endphp
+                        @if($user && $user->role_id !== 1) <!-- Only show if the role is not admin and user exists -->
+                            <tr>
+                                <td>{{ $loop->iteration + $counter }}</td>
+                                <td>{{ $user->first_name ?? 'N/A' }}</td>
+                                <td>{{ Str::limit($token->token_value, 20, '...') }}</td>
+                                <td>{{ $token->expires_at }}</td>
+                                <td>
+                                    @if(now()->greaterThan($token->expires_at))
+                                        <span class="badge" style="background-color: #dc3545; color: white;">Expired</span> <!-- Red for Expired -->
+                                    @else
+                                        <span class="badge" style="background-color: #28a745; color: white;">Active</span> <!-- Green for Active -->
+                                    @endif
+                                </td>
+                                <td>
+                                    <form id="delete-form-{{ $token->id }}" action="{{ route('tokens.destroy', $token->id) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete({{ $token->id }})">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endif
+                    @empty
+                        <tr>
+                            <td colspan="6" class="text-center">No Tokens Found</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
 
             <div>{{ $tokens->links() }}</div>
         </div>
