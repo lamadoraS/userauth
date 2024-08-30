@@ -67,7 +67,7 @@ class UserController extends Controller
             'expires_at' => $expirationDate,
         ]);
 
-        // Mail::to($user->email)->send(new NewUserMail($user, $data['password']));
+        Mail::to($user->email)->send(new NewUserMail($user, $data['password']));
 
         AuditLog::create([
             'user_id' => $user->id,
