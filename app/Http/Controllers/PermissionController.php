@@ -35,7 +35,6 @@ class PermissionController extends Controller
      */
     public function store(Request $request) : RedirectResponse
     {
-        // dd($request->all());
         $data = $request->validate([
             'permission_name'=> 'required',
           ]);
@@ -45,13 +44,11 @@ class PermissionController extends Controller
            
             $options[$i] = $role;
           }
-        //   dd($options);
-
+     
        
          $permission =  Permission::create($data);
          $permission->roles()->attach($options);
-        //   Permission::with('roles')->whereIn('role_id' , $request['role_id']);
-        //   Role::with('permissions')->whereIn('permission_id', $permissionId);
+       
           return redirect()->route('permissions.index');
     }
 

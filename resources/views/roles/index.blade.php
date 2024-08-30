@@ -45,7 +45,7 @@
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                deleteRole(roleId); // Call deleteRole function with the roleId
+                deleteRole(roleId);
             }
         });
     }

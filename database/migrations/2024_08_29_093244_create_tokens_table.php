@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->string('token_value');
-            $table->timestamp('expires_at')->default(now()->addDays(7));
+            $table->timestamp('expires_at')->nullable();
             $table->timestamps();
         });
     }

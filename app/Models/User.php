@@ -55,19 +55,18 @@ class User extends Authenticatable
 
     public function checkAndDeleteExpiredToken()
     {
-        // Your logic to check and delete the expired token
-        $role = $this->roles; // Adjust this according to your role relationship
+        $role = $this->roles; 
 
-        // Check if the user's role is not admin
         if ($role && $role->role_name !== 'admin') {
-            $token = $this->token; // Assuming this is a valid relationship
+            $token = $this->token; 
             
             if ($token && Carbon::now()->greaterThanOrEqualTo($token->expires_at)) {
-                // Token has expired, delete it
                 $token->delete();
+                
             }
         }
     }
+    
     /**
      * The attributes that should be hidden for serialization.
      *

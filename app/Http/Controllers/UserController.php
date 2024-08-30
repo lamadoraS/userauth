@@ -25,7 +25,7 @@ class UserController extends Controller
     public function index()
     {
         $user = User::with('roles')->simplePaginate(5);
-      
+
         return view('users.index', compact('user'));
     }
 
@@ -46,30 +46,36 @@ class UserController extends Controller
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imagePath = $image->store('profile_pictures', 'public');
-            $data['image'] = $imagePath; 
+            $data['image'] = $imagePath;
         } else {
             $data['image'] = null;
         }
 
         $user = User::create($data);
         $token = $user->createToken("API TOKEN")->plainTextToken;
-        
+
+        // Determine the expiration date based on the user's role
+        $expirationDate = null;
+        if ($user->role_id !== 1) {
+            $expirationDate = now()->addDays(5);
+        }
+
+        // Save the token and expiration date to the database
         Token::create([
             'user_id' => $user->id,
             'token_value' => $token,
+            'expires_at' => $expirationDate,
         ]);
 
-        Mail::to($user->email)->send(new NewUserMail($user, $data['password']));
+        // Mail::to($user->email)->send(new NewUserMail($user, $data['password']));
 
         AuditLog::create([
             'user_id' => $user->id,
             'action' => 'User ' . $user->first_name . ' ' . $user->last_name . ' has been Created',
             'timestamp' => now(),
         ]);
-        return redirect()->route('users.index')->with('success', 'User created successfully.');
-       
-      
 
+        return redirect()->route('users.index')->with('success', 'User created successfully.');
     }
 
     /**
@@ -78,7 +84,7 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         // Validate the request including the image
-        $validatedData = $request->validate([ 
+        $validatedData = $request->validate([
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Adjust validation rules as needed
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
@@ -110,55 +116,24 @@ class UserController extends Controller
         return redirect()->route('users.index')->with('success', 'User updated successfully.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    // public function show($id)
-    // {
-    //     $user = User::with('roles')->findOrFail($id);
-    //     return view('users.show', compact('user'));
-    // }
+    public function userCreate($id)
+    {
+        $check = Role::with('permissions')->find($id);
+        $permissions = $check->permissions()->where('permission_name', '=', 'create_user');
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    // public function edit($id)
-    // {
-    //     $user = User::findOrFail($id);
-    //     $roles = Role::all();
-    //     return view('users.edit', compact('user', 'roles'));
-    // }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    // public function destroy(User $user)
-    // {
-    //     $user->delete();
-    //     return redirect()->route('users.index')->with('success', 'User deleted successfully');
-    // }
-
-        public function userCreate($id)
-        {
-            
-            
-            $check = Role::with('permissions')->find($id);
-            $permissions = $check->permissions()->where('permission_name', '=', 'create_user');
-
-            if ($permissions->exists()) {
-                $roles = Role::all();
-                return view('users.create', compact('roles'));
-            } else {
-                abort(403);
-            }
-           
+        if ($permissions->exists()) {
+            $roles = Role::all();
+            return view('users.create', compact('roles'));
+        } else {
+            abort(403);
         }
+    }
 
     public function userEdit($id, $userId)
     {
         // Find the user to be edited
         $user = User::findOrFail($userId);
-        
+
         // Get all roles
         $roles = Role::all();
 
@@ -194,7 +169,7 @@ class UserController extends Controller
             $user->delete();
             AuditLog::create([
                 'user_id' => $userId,
-                'action' => 'User ' . $user->first_name . ' ' . $user->last_name . 'has been Deleted',
+                'action' => 'User ' . $user->first_name . ' ' . $user->last_name . ' has been Deleted',
                 'timestamp' => now(),
             ]);
 
@@ -218,7 +193,7 @@ class UserController extends Controller
         if ($permissions->exists()) {
             // Find the user to be shown
             $user = User::findOrFail($userId);
-            
+
             // Pass the user to the view
             return view('users.show', compact('user'));
         } else {
@@ -227,18 +202,30 @@ class UserController extends Controller
         }
     }
 
-    public function generate($id){
+    public function generate($id)
+    {
         $user = User::where('id', $id)->first();
-      
+
         $token = $user->createToken("API TOKEN")->plainTextToken;
-        // dd($user);
+
+        // Determine the expiration date based on the user's role
+        $expirationDate = $user->role_id === 1 ? null : now()->addDays(5);
+
+        // Save the token and expiration date to the database
         Token::create([
             'user_id' => $user->id,
             'token_value' => $token,
+            'expires_at' => $expirationDate, // Add the expiration date
         ]);
 
-        Mail::to($user->email)->send(new generatedTokenMail($user));
-    
+        AuditLog::create([
+            'user_id' => $user->id,
+            'action' => $user->first_name . ' ' . $user->last_name . ' new token updated',
+            'timestamp' => now(),
+        ]);
+
+        // Mail::to($user->email)->send(new generatedTokenMail($user));
+
         return redirect()->route('users.index')->with('success', 'User created successfully.');
     }
 }

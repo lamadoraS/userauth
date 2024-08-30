@@ -23,19 +23,11 @@ class HomeController extends Controller
    }
 
    public function byRole($userId){
-    // dd($userId);
     $users = User::where('id', $userId)->latest()->first();
-    // dd($users);
-    // dd($user);
     return view('userRole.index', compact('users'));
-
-   
    }
    public function guestRole($userId){
-    // dd($userId);
     $users = User::where('id', $userId)->latest()->first();
-    // dd($users);
-    // dd($user);
     return view('guestRole.index', compact('users'));
 
     

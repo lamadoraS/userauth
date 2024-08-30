@@ -67,4 +67,6 @@ class TokenController extends Controller
         $token->delete();
          return redirect()->route('tokens.index');
     }
+    
+    
 }

@@ -29,81 +29,94 @@
 
     <!-- Template Stylesheet -->
     <link href='{{asset("assets/css/style.css")}}' rel="stylesheet">
+    
     <script>
-       const token = localStorage.getItem('token');
+     
+   const token = localStorage.getItem('token');
+   if (!token) {
+       window.location.href = '/';
+   }
 
-       if (!token) {
-           window.location.href = '/';
-       }
-       
-
-       document.addEventListener('DOMContentLoaded', function(){
+   document.addEventListener('DOMContentLoaded', function(){
         fetch('/api/user', {
             method: 'GET',
             headers: {
-                Authorization: 'Bearer ' + localStorage.getItem('token'),
+                Authorization: 'Bearer ' + token,
                 application: 'application/json',
             }
-        }).then(response => response.json())
-        .then(response => {
-           
-                if(response){
-                    document.getElementById('FirstName').innerHTML = response.first_name;
-                    document.getElementById('firstName').innerHTML = response.first_name;
-
-
-                    if(response.image){
-                    document.getElementById('Image').src = ('storage/' + response.image);
-                     document.getElementById('image').src = ('storage/' + response.image);
-                    }else{
-                        document.getElementById('Image').src = `{{asset('assets/img/icon.jpg')}}` ;
-                        document.getElementById('image').src = `{{asset('assets/img/icon.jpg')}}`;
-                    }
-                   
-                  if(response.role_id == 1){
-                     document.getElementById('Role').innerHTML = 'Admin';
-                    }else if(response.role_id == 2)
-                    {
-                    document.getElementById('Role').innerHTML = 'User'
-                    }else if(response.role_id == 3){
-                    document.getElementById('Role').innerHTML = 'Api Consumer'
-                    }else if(response.role_id == 4){
-                    document.getElementById('Role').innerHTML = 'Guest'
-                    }
-
-                    if(response.role_id == 1){
-                        document.getElementById('navigationBar').innerHTML =  `  <div class="navbar-nav w-100">
-                <a href="{{ url('/index') }}" class="nav-item nav-link "><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
-                <div class="navbar-nav w-100">
-                <a href="{{ route('users.index') }}" class="nav-item nav-link"><i class="fa fa-user me-2"></i>User</a>
-                <a href="{{ route('roles.index') }}" class="nav-item nav-link"><i class="fa fa-key me-2"></i>Roles</a>
-                </div>
-                <div class="navbar-nav w-100">
-                    <a href="{{ route('permissions.index') }}" class="nav-item nav-link"><i class="fa fa-lock me-2"></i>Permissions</a>
-                </div>
-                <div class="navbar-nav w-100">
-                    <a href="{{ route('tokens.index') }}" class="nav-item nav-link"><i class="fa fa-shield-alt me-2"></i>Tokens</a>
-                </div>
-                <div class="navbar-nav w-100">
-                    <a href="{{ route('auditlogs.index') }}" class="nav-item nav-link"><i class="fa fa-file-alt me-2"></i>Logs</a>
-                </div>
-                `;
-                
-                    }if(response.role_id == 4){
-                        document.getElementById('routeUser').innerHTML = `<a href="/guestRole/${response.id}" class="nav-item nav-link"><i class="fa fa-user me-2"></i>User</a>`;
-
-                    }if(response.role_id == 2){
-                    document.getElementById('routeUser').innerHTML = `<a href="/byRole/${response.id}" class="nav-item nav-link"><i class="fa fa-user me-2"></i>User</a>`;
-                }else{  
-
-                }
-                
-                }
-
-                                
+        }).then(response => {
+            
+            return response.json();
         })
-       })
-    </script>
+        .then(response => {
+            if(response){
+                if(response.token === null){
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('role_id');
+                    localStorage.removeItem('user_id');
+                    
+                    swal({
+                        title: "Token Expired",
+                        text: "Your token has expired, please wait for the activation email and login again to activate your account.",
+                        icon: "warning",
+                        button: "OK",
+                    }).then(() => {
+                        window.location.href = '/login';
+                    });
+                    }
+
+                document.getElementById('FirstName').innerHTML = response.first_name;
+                document.getElementById('firstName').innerHTML = response.first_name;
+
+                if(response.image){
+                    document.getElementById('Image').src = ('storage/' + response.image);
+                    document.getElementById('image').src = ('storage/' + response.image);
+                } else {
+                    document.getElementById('Image').src = `{{asset('assets/img/icon.jpg')}}`;
+                    document.getElementById('image').src = `{{asset('assets/img/icon.jpg')}}`;
+                }
+
+                if(response.role_id == 1){
+                    document.getElementById('Role').innerHTML = 'Admin';
+                } else if(response.role_id == 2) {
+                    document.getElementById('Role').innerHTML = 'User';
+                } else if(response.role_id == 3) {
+                    document.getElementById('Role').innerHTML = 'Api Consumer';
+                } else if(response.role_id == 4) {
+                    document.getElementById('Role').innerHTML = 'Guest';
+                }
+
+                if (response.role_id !== 1) {
+                    document.getElementById('notificationDropdown').style.display = 'none';
+                }
+
+                if(response.role_id == 1){
+                    document.getElementById('navigationBar').innerHTML = `  
+                        <div class="navbar-nav w-100">
+                            <a href="{{ url('/index') }}" class="nav-item nav-link"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
+                            <a href="{{ route('users.index') }}" class="nav-item nav-link"><i class="fa fa-user me-2"></i>User</a>
+                            <a href="{{ route('roles.index') }}" class="nav-item nav-link"><i class="fa fa-key me-2"></i>Roles</a>
+                            <a href="{{ route('permissions.index') }}" class="nav-item nav-link"><i class="fa fa-lock me-2"></i>Permissions</a>
+                            <a href="{{ route('tokens.index') }}" class="nav-item nav-link"><i class="fa fa-shield-alt me-2"></i>Tokens</a>
+                            <a href="{{ route('auditlogs.index') }}" class="nav-item nav-link"><i class="fa fa-file-alt me-2"></i>Logs</a>
+                        </div>
+                    `;
+                }
+
+                if(response.role_id == 4){
+                    document.getElementById('routeUser').innerHTML = `<a href="/guestRole/${response.id}" class="nav-item nav-link"><i class="fa fa-user me-2"></i>User</a>`;
+                }
+
+                if(response.role_id == 2){
+                    document.getElementById('routeUser').innerHTML = `<a href="/byRole/${response.id}" class="nav-item nav-link"><i class="fa fa-user me-2"></i>User</a>`;
+                }
+            }
+        });
+   });
+
+  
+</script>
+
   
 </head>
 
@@ -168,7 +181,7 @@
                     use App\Models\AuditLog;
                     $auditlogs = AuditLog::get();
                      @endphp
-                    <div class="nav-item dropdown">
+                    <div class="nav-item dropdown" id="notificationDropdown">
                         <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#notifModal">
                             <i class="fa fa-bell me-lg-2 position-relative">
                                 <!-- Badge for notification count -->
