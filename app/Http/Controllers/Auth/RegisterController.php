@@ -65,7 +65,7 @@ class RegisterController extends Controller
             Token::create([
                 'user_id' => $user->id,
                 'token_value' => $token,
-                'expires_at' => Carbon::now()->addMonth()
+                'expires_at' => Carbon::now()->addDays(5)
             ]);
 
             
