@@ -224,7 +224,7 @@ class UserController extends Controller
             'timestamp' => now(),
         ]);
 
-        // Mail::to($user->email)->send(new generatedTokenMail($user));
+        Mail::to($user->email)->send(new generatedTokenMail($user));
 
         return redirect()->route('users.index')->with('success', 'User created successfully.');
     }
